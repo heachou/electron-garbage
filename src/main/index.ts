@@ -14,7 +14,7 @@ function createWindow() {
     // width: 800, // Comment out or remove fixed width
     // height: 600, // Comment out or remove fixed height
     height: 600,
-    frame: false,
+    // frame: false,
     titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: true,

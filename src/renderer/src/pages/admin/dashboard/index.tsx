@@ -141,9 +141,10 @@ const AdminMDashboard = () => {
   })
 
   const filterDeviceList = useMemo(() => {
-    return deviceList.filter((device) => {
-      return device.path.includes('usbserial')
-    })
+    // return deviceList.filter((device) => {
+    //   return device.path.includes('usbserial')
+    // })
+    return deviceList
   }, [deviceList])
   // 确定烟雾报警状态和颜色
   const smokeStatusText = putterState?.烟雾报警标志?.value ? '报警' : '正常'

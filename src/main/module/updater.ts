@@ -129,10 +129,7 @@ export function addUpdaterListener() {
       })
       .then(({ response }) => {
         if (response === 1) {
-          autoUpdater.quitAndInstall(true, true) // 退出并安装重启
-          setTimeout(() => {
-            app.relaunch()
-          }, 5000)
+          autoUpdater.quitAndInstall(false, true) // 退出并安装重启
         }
       })
   })

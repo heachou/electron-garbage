@@ -88,12 +88,24 @@ if (!gotTheLock) {
     }
   })
 
-  app.on('ready', createWindow)
+  app.on('ready', () => {
+    createWindow()
+    if (!is.dev) {
+      const settings = app.getLoginItemSettings()
+      if (!settings.openAtLogin) {
+        app.setLoginItemSettings({
+          openAtLogin: true,
+          // 对于 Windows，您可能需要提供启动参数
+          args: ['--opened-at-login', '1']
+        })
+      }
+    }
+  })
 }
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
+    // app.quit()
   }
 })
 

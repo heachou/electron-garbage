@@ -9,7 +9,7 @@ import {
   SettingFilled, // 退出系统
   ExperimentOutlined
 } from '@ant-design/icons'
-import { Button, Card, message, Tag, Typography } from 'antd'
+import { Button, Card, message, Select, Tag, Typography } from 'antd'
 import { useMount, useRequest } from 'ahooks'
 import { callApi } from '@renderer/utils'
 import { usePutterState } from '@renderer/hooks/usePutterState'
@@ -17,6 +17,7 @@ import usePuttingEquipmentStore from '@renderer/store/puttingEquipmentStore'
 import useWeightDeviceStore from '@renderer/store/weightDeviceStore'
 import UpdateVersionModal from './updateVersionModal'
 import { useWeightDevice } from '@renderer/hooks/useWeightDevice'
+import pkgJson from '../../../../../../package.json'
 
 const { Title } = Typography
 
@@ -216,6 +217,15 @@ const AdminMDashboard = () => {
                   <span className="text-gray-400">设备路径:</span> {device.path}
                   <span className="">({device.open ? '已打开' : '未开启'})</span>
                 </div>
+                {/* <Select
+                  onChange={(value) => {
+                    console.log(value)
+                  }}
+                  placeholder="请选择"
+                >
+                  <Select.Option value="puttter">推杆设备</Select.Option>
+                  <Select.Option value="weightDevice">称重设备</Select.Option>
+                </Select> */}
                 <Button onClick={() => toggleStatus(device)}>
                   {device.open ? '断开' : '打开'}
                 </Button>
@@ -271,6 +281,7 @@ const AdminMDashboard = () => {
           ))}
         </div>
         <p className="text-gray-300 py-3 text-sm">设备编号：{deviceCode}</p>
+        <p className="text-gray-300 py-3 text-sm">当前版本：{pkgJson.version}</p>
       </div>
       <UpdateVersionModal
         open={updateAvailable}

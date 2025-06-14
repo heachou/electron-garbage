@@ -34,8 +34,8 @@ export const checkPortIsPutterDevice = async (port: string) => {
     client
       .readRegisters({
         deviceAddress: 0x01,
-        startAddress: 8,
-        registerCount: 4,
+        startAddress: 1,
+        registerCount: 1,
         port
       })
       .then((result) => {

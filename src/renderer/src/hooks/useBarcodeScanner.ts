@@ -52,7 +52,6 @@ const useBarcodeScanner = ({
   const codeRef = useRef<string>('')
   const optionsRef = useRef({ onScan, timeout, minLength, endKeys, preventDefault, preventInput })
 
-  // Update options ref if they change
   useEffect(() => {
     optionsRef.current = { onScan, timeout, minLength, endKeys, preventDefault, preventInput }
   }, [onScan, timeout, minLength, endKeys, preventDefault, preventInput])

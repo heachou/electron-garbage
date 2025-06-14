@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, screen } from 'electron'
 import { join } from 'path'
 import { createApplicationMenu } from './menu'
 import createIpcHandlers from './services'
@@ -10,12 +10,16 @@ import { addUpdaterListener, initSmallestUpdater } from './module/updater'
 let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const { width, height } = primaryDisplay.bounds
   mainWindow = new BrowserWindow({
-    // width: 800, // Comment out or remove fixed width
-    // height: 600, // Comment out or remove fixed height
-    height: 600,
-    // frame: false,
+    x: 0,
+    y: 0,
+    width,
+    height,
+    frame: false,
     titleBarStyle: 'hidden',
+    alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -52,7 +56,8 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
-    mainWindow?.maximize() // Maximize the window
+    mainWindow?.setAlwaysOnTop(true, 'screen-saver')
+    mainWindow?.maximize()
   })
 
   // 检查全量更新

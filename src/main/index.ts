@@ -5,7 +5,7 @@ import createIpcHandlers from './services'
 import Service from './services/service'
 import { encodeError } from './utils'
 import { is } from '@electron-toolkit/utils'
-import { addUpdaterListener, initSmallestUpdater } from './module/updater'
+import { addSmallestUpdaterListeners, addUpdaterListener, checkSmallUpdate } from './module/updater'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -62,8 +62,9 @@ function createWindow() {
 
   // 检查全量更新
   addUpdaterListener()
+  const smallestUpdater = addSmallestUpdaterListeners()
   // 检查增量更新,每小时一次
-  initSmallestUpdater()
+  checkSmallUpdate(smallestUpdater)
 
   mainWindow.on('closed', () => {
     mainWindow = null

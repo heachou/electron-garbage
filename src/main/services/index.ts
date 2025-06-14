@@ -8,7 +8,7 @@ import * as configService from './config'
 import * as mediaService from './media'
 import { ProgressInfo } from 'electron-updater'
 import * as wsService from '../module/ws'
-import { checkAppUpdate } from '../module/updater'
+import { checkAppUpdate, checkSmallUpdate } from '../module/updater'
 
 const createIpcHandlers = () => ({
   ...puttingEquipmentHandlers(),
@@ -19,7 +19,8 @@ const createIpcHandlers = () => ({
   ...configService,
   ...mediaService,
   ...wsService,
-  checkAppUpdate
+  checkAppUpdate,
+  checkSmallUpdate
 })
 
 export type IpcHandlers = ReturnType<typeof createIpcHandlers>

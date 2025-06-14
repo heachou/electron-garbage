@@ -15,13 +15,11 @@ asarUnpack:
   - resources/**
 win:
   executableName: 城洁智能分类客户端
-  verifyUpdateCodeSignature: true
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
-  perMachine: true
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:

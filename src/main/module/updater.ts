@@ -5,18 +5,9 @@ import { SmallestUpdater } from 'electron-smallest-updater'
 import { autoUpdater } from 'electron-updater'
 import Service from '../services/service'
 
-const baseURL = import.meta.env.VITE_SMALLEST_UPDATE_PATH
-
-function addSmallestUpdaterListeners(): SmallestUpdater {
+export function addSmallestUpdaterListeners(): SmallestUpdater {
   // 创建实例
-  const smallestUpdater = new SmallestUpdater({
-    logger,
-    publish: {
-      url: `${baseURL}/smallest-updates`
-    },
-    autoDownload: false,
-    forceDevUpdateConfig: true
-  })
+  const smallestUpdater = Service.getInstance().smallestUpdater
 
   // 更新可用
   smallestUpdater.on('update-available', (info) => {
@@ -40,8 +31,8 @@ function addSmallestUpdaterListeners(): SmallestUpdater {
   return smallestUpdater
 }
 
-export function initSmallestUpdater(): void {
-  const smallestUpdater = addSmallestUpdaterListeners()
+export function checkSmallUpdate(): void {
+  const smallestUpdater: SmallestUpdater = Service.getInstance().smallestUpdater
   // 定时检查更新，每小时一次
   setInterval(
     () => {

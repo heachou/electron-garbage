@@ -6,6 +6,7 @@ import { useMount } from 'ahooks'
 import { usePutterState } from './hooks/usePutterState'
 import { useWeightDevice } from './hooks/useWeightDevice'
 import useListener from './hooks/useListener'
+import { callApi } from './utils'
 
 function App({ children }: { children: React.ReactNode }) {
   const getConfig = useLocalConfigStore((state) => state.getConfig)
@@ -94,6 +95,13 @@ function App({ children }: { children: React.ReactNode }) {
         </div>
       )}
       {children}
+      <Button
+        onClick={() => {
+          callApi('checkSmallUpdate')
+        }}
+      >
+        检查更新
+      </Button>
     </>
   )
 }

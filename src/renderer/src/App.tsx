@@ -95,13 +95,6 @@ function App({ children }: { children: React.ReactNode }) {
         </div>
       )}
       {children}
-      <Button
-        onClick={() => {
-          callApi('checkSmallUpdate')
-        }}
-      >
-        检查更新
-      </Button>
     </>
   )
 }

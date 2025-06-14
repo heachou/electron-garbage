@@ -281,7 +281,14 @@ const AdminMDashboard = () => {
           ))}
         </div>
         <p className="text-gray-300 py-3 text-sm">设备编号：{deviceCode}</p>
-        <p className="text-gray-300 py-3 text-sm">当前版本：{pkgJson.version}</p>
+        <p className="text-gray-300 py-3 text-sm">当前版本：{pkgJson.version}</p>{' '}
+        <Button
+          onClick={() => {
+            callApi('checkSmallUpdate')
+          }}
+        >
+          检查更新
+        </Button>
       </div>
       <UpdateVersionModal
         open={updateAvailable}

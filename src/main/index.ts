@@ -95,9 +95,7 @@ if (!gotTheLock) {
       const settings = app.getLoginItemSettings()
       if (!settings.openAtLogin) {
         app.setLoginItemSettings({
-          openAtLogin: true,
-          // 对于 Windows，您可能需要提供启动参数
-          args: ['--opened-at-login', '1']
+          openAtLogin: true
         })
       }
     }

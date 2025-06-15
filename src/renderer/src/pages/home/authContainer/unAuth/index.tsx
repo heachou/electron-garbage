@@ -163,38 +163,39 @@ const UnAuth = () => {
   )
 
   return (
-    <Spin spinning={loading}>
-      <div className="flex space-x-2 flex-1 items-center">
-        <div className="flex flex-col items-center space-y-6 text-center min-w-80">
-          <p className="text-bold text-xl">二维码</p>
-          <p>微信扫一扫投递垃圾</p>
-          {erWeiCode?.qrCode && (
-            <img src={`data:image/png;base64,${erWeiCode?.qrCode}`} alt="" className="w-48" />
-          )}
-        </div>
-        <div className="flex flex-col flex-1 space-y-3">
+    <>
+      <div className="flex flex-1 flex-col h-full min-h-0 justify-between">
+        <h1 className="text-4xl mb-12 font-bold"> 登录 </h1>
+        <div className="flex flex-col flex-1 w-full">
           <PhoneLoginContainer />
-          <Divider />
           <Button
             onClick={handleStartFaceLogin}
             size="large"
-            className="text-xl h-12 text-white bg-primary"
+            className="text-xl mt-6  h-[60px] text-white bg-primary"
           >
             人脸识别登录
           </Button>
         </div>
-        <div className="flex flex-col items-center space-y-6 text-center min-w-80">
-          <p className="text-bold text-xl">小程序</p>
-          <p>微信扫一扫进入小程序</p>
-          {data?.qrCode && (
-            <img src={`data:image/png;base64,${data?.qrCode}`} alt="" className="w-48" />
-          )}
-        </div>
+        <Spin spinning={loading}>
+          <div className="grid grid-cols-2 mt-20 gap-x-8">
+            <div className="flex flex-col items-center space-y-2 text-center border border-solid border-gray-100 rounded-md py-10">
+              {data?.qrCode && (
+                <img src={`data:image/png;base64,${data?.qrCode}`} alt="" className="w-40" />
+              )}
+              <p className="mb-0 text-xs">微信扫一扫进入小程序</p>
+            </div>
+            <div className="flex flex-col items-center space-y-2 text-center border border-solid border-gray-100 rounded-md py-10">
+              {erWeiCode?.qrCode && (
+                <img src={`data:image/png;base64,${erWeiCode?.qrCode}`} alt="" className="w-40" />
+              )}
+              <p className="mb-0 text-xs">微信扫一扫投递垃圾</p>
+            </div>
+          </div>
+        </Spin>
       </div>
-      {/* 摄像头模态框 */}
       {cameraOpen && <FaceVideoModal open={cameraOpen} onClose={handleCloseFaceLogin} />}
       {messageContext}
-    </Spin>
+    </>
   )
 }
 

@@ -6,8 +6,6 @@ import FaceBindModal from './faceBindModal'
 import CardBindModal from './cardBindModal'
 import useUserStore from '@renderer/store/userStore'
 import { LOGOUT_DELAY_SECONDS, mediaDomain, defaultAvatarUrl } from '@renderer/const'
-import { useRequest } from 'ahooks'
-import { callApi } from '@renderer/utils'
 
 const { Title, Text } = Typography
 

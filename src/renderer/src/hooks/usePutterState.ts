@@ -2,7 +2,7 @@ import { registerConfigs } from '@/main/data'
 import usePuttingEquipmentStore from '@renderer/store/puttingEquipmentStore'
 import { callApi } from '@renderer/utils'
 import { useRequest } from 'ahooks'
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
 // 辅助函数：查找配置
@@ -105,6 +105,13 @@ export const usePutterState = () => {
       initialedRef.current = true
     }
   })
+
+  useEffect(() => {
+    if (!opened) {
+      cancelGetPutterDeviceStateInterval()
+    }
+  }, [cancelGetPutterDeviceStateInterval, opened])
+
   // 开启或关闭定时使能  开始/停止
   const { runAsync: startPutterDeviceEnable } = useRequest(
     async (flag: boolean) => {

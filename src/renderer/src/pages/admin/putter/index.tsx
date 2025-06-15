@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Card, Form, InputNumber, message, Select, Switch, Typography } from 'antd'
 import usePuttingEquipmentStore from '@renderer/store/puttingEquipmentStore'
 import { useShallow } from 'zustand/react/shallow'
@@ -30,6 +30,7 @@ interface UpdateTask {
 }
 
 const PutterDeviceConfiguration = () => {
+  const [messageApi, messageContext] = message.useMessage()
   const [form] = Form.useForm()
   const { putterState } = usePuttingEquipmentStore(
     useShallow((state) => {
@@ -38,6 +39,7 @@ const PutterDeviceConfiguration = () => {
       }
     })
   )
+  console.log('🚀 ~ PutterDeviceConfiguration ~ putterState:', putterState)
 
   // 状态：更新队列和处理状态
   const [updateQueue, setUpdateQueue] = useState<UpdateTask[]>([])
@@ -53,89 +55,100 @@ const PutterDeviceConfiguration = () => {
     )
   }, [putterState])
 
+  useEffect(() => {
+    if (putterState) {
+      form.setFieldsValue({
+        ...initialValues
+      })
+    }
+  }, [form, initialValues, putterState])
+
   // 渲染配置项 (修正 InputNumber 的 min/max)
-  const renderFormItem = (config: RegisterConfig) => {
-    if (config.dataType === 'bool') {
+  const renderFormItem = useCallback(
+    (config: RegisterConfig) => {
+      if (config.dataType === 'bool') {
+        return (
+          <Form.Item
+            key={`item_${config.address}`} // 确保有 key
+            name={`addr_${config.address}`}
+            label={`${config.name}`}
+            valuePropName="checked"
+          >
+            <Switch disabled={config.readOnly} />
+          </Form.Item>
+        )
+      }
+
+      if (config.options) {
+        return (
+          <Form.Item
+            key={`item_${config.address}`} // 确保有 key
+            name={`addr_${config.address}`}
+            label={`${config.name}`}
+          >
+            <Select
+              disabled={config.readOnly}
+              placeholder="请选择"
+              options={config.options.map((option) => ({
+                value: option.value,
+                label: option.label
+              }))}
+            />
+          </Form.Item>
+        )
+      }
+
+      if (config.readOnly) {
+        return (
+          <Form.Item key={`item_${config.address}`} label={`${config.name}`}>
+            <span className="ant-form-text">
+              {putterState?.[config.name as TRegisterConfigNames]?.value?.toString() ?? 'N/A'}{' '}
+              {config.unit ?? ''}
+            </span>
+          </Form.Item>
+        )
+      }
+
       return (
         <Form.Item
           key={`item_${config.address}`} // 确保有 key
           name={`addr_${config.address}`}
           label={`${config.name}`}
-          valuePropName="checked"
-        >
-          <Switch disabled={config.readOnly} />
-        </Form.Item>
-      )
-    }
-
-    if (config.options) {
-      return (
-        <Form.Item
-          key={`item_${config.address}`} // 确保有 key
-          name={`addr_${config.address}`}
-          label={`${config.name}`}
-        >
-          <Select
-            disabled={config.readOnly}
-            placeholder="请选择"
-            options={config.options.map((option) => ({
-              value: option.value,
-              label: option.label
-            }))}
-          />
-        </Form.Item>
-      )
-    }
-
-    if (config.readOnly) {
-      return (
-        <Form.Item key={`item_${config.address}`} label={`${config.name}`}>
-          <span className="ant-form-text">
-            {putterState?.[config.name as TRegisterConfigNames]?.value?.toString() ?? 'N/A'}{' '}
-            {config.unit ?? ''}
-          </span>
-        </Form.Item>
-      )
-    }
-
-    return (
-      <Form.Item
-        key={`item_${config.address}`} // 确保有 key
-        name={`addr_${config.address}`}
-        label={`${config.name}`}
-        rules={[
-          // 保留这里的 rules 以提供即时反馈
-          { required: !config.readOnly, message: `请输入${config.name}` }, // 只对非只读项要求必填
-          {
-            validator: async (_, value) => {
-              if (value === null || value === undefined || config.readOnly) {
-                // 只读项不校验
-                return
-              }
-              if (typeof value === 'number') {
-                if (config.min !== undefined && value < config.min) {
-                  throw new Error(`值必须大于或等于 ${config.min}`)
+          rules={[
+            // 保留这里的 rules 以提供即时反馈
+            { required: !config.readOnly, message: `请输入${config.name}` }, // 只对非只读项要求必填
+            {
+              validator: async (_, value) => {
+                if (value === null || value === undefined || config.readOnly) {
+                  // 只读项不校验
+                  return
                 }
-                if (config.max !== undefined && value > config.max) {
-                  throw new Error(`值必须小于或等于 ${config.max}`)
+                if (typeof value === 'number') {
+                  if (config.min !== undefined && value < config.min) {
+                    throw new Error(`值必须大于或等于 ${config.min}`)
+                  }
+                  if (config.max !== undefined && value > config.max) {
+                    throw new Error(`值必须小于或等于 ${config.max}`)
+                  }
                 }
               }
             }
-          }
-        ]}
-      >
-        <InputNumber
-          disabled={config.readOnly}
-          min={config.min} // 使用 config.min
-          max={config.max} // 使用 config.max
-          placeholder="请输入"
-          precision={config.decimalPoints}
-          addonAfter={config.unit}
-          style={{ width: 160 }}
-        />
-      </Form.Item>
-    )
-  }
+          ]}
+        >
+          <InputNumber
+            disabled={config.readOnly}
+            min={config.min} // 使用 config.min
+            max={config.max} // 使用 config.max
+            placeholder="请输入"
+            precision={config.decimalPoints}
+            addonAfter={config.unit}
+            style={{ width: 160 }}
+          />
+        </Form.Item>
+      )
+    },
+    [putterState]
+  )
 
   // 按功能模块分组
   const moduleGroups = [
@@ -191,10 +204,10 @@ const PutterDeviceConfiguration = () => {
         const task = params[0] as UpdateTask
         console.error(`Error updating ${task.config.name} (Address ${task.address}):`, error)
         // 可选：将失败的任务重新放回队列或标记为失败
-        message.error(`更新${task.config.name}失败`)
+        messageApi.error(`更新${task.config.name}失败`)
       },
       onSuccess(data, [task]) {
-        message.success(`成功更新${task.config.name}，值为${data.value}`)
+        messageApi.success(`成功更新${task.config.name}，值为${data.value}`)
       },
       onFinally: () => {
         // 不论成功或失败，都尝试处理下一个任务
@@ -228,6 +241,7 @@ const PutterDeviceConfiguration = () => {
   // 表单值变化时的处理函数 (修正验证逻辑)
   const handleValuesChange = useCallback(
     async (changedValues: Record<string, unknown>) => {
+      await sleep(100)
       const tasksToAdd: UpdateTask[] = []
       const validationPromises: Promise<void>[] = [] // 存储验证的 Promise
 
@@ -259,7 +273,6 @@ const PutterDeviceConfiguration = () => {
                 console.warn(
                   `Skipping update for ${key}: Raw value ${rawValue} is out of uint16 range (0-65535).`
                 )
-                // message.error(`${config.name} 计算值 ${rawValue} 超出 Modbus 范围 (0-65535)`);
                 continue // 不进行验证也不添加任务
               }
               const validationPromise = form
@@ -271,7 +284,7 @@ const PutterDeviceConfiguration = () => {
                 })
                 .catch((errorInfo) => {
                   // 验证失败，Form 会显示错误，这里记录日志
-                  console.log(`Validation failed for ${key}:`, errorInfo)
+                  console.log(`Validation failed for ${key}:`, JSON.stringify(errorInfo))
                 })
               validationPromises.push(validationPromise)
             }
@@ -291,7 +304,7 @@ const PutterDeviceConfiguration = () => {
       })
     },
     [form, startQueueProcessing]
-  ) // 添加 form 依赖
+  )
 
   return (
     <div className="p-6 bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen relative">
@@ -337,6 +350,7 @@ const PutterDeviceConfiguration = () => {
           )
         })}
       </Form>
+      {messageContext}
     </div>
   )
 }

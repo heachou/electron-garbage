@@ -5,7 +5,6 @@ import AuthContainer from './authContainer'
 import TrashList from './trashList'
 import { useNavigate } from 'react-router-dom'
 import useLongPress from '@renderer/hooks/useLongPress'
-import bg from '@renderer/assets/icons/bg.png'
 
 const Home = () => {
   const navigate = useNavigate()
@@ -21,15 +20,11 @@ const Home = () => {
   })
 
   return (
-    <div className="relative" style={{ backgroundImage: `url(${bg})`, backgroundSize: 'cover' }}>
-      <div className="h-screen py-2 flex items-center">
-        <div className="flex-1 flex flex-col space-y-5 h-full min-w-0">
-          <Advertise />
-          <TrashList />
-        </div>
-        <div className="w-[500px] h-full px-2">
-          <AuthContainer />
-        </div>
+    <div className="relative">
+      <div className="bg-primary h-screen pt-2 flex flex-col space-y-2">
+        <Advertise />
+        <AuthContainer />
+        <TrashList />
       </div>
       <span
         {...longPressEvents}

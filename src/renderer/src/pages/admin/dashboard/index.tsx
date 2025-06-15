@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   SettingOutlined, // 推杆设置
@@ -9,7 +9,7 @@ import {
   SettingFilled, // 退出系统
   ExperimentOutlined
 } from '@ant-design/icons'
-import { Button, Card, message, Select, Tag, Typography } from 'antd'
+import { Button, Card, message, Modal, Select, Tag, Typography } from 'antd'
 import { useMount, useRequest } from 'ahooks'
 import { callApi } from '@renderer/utils'
 import { usePutterState } from '@renderer/hooks/usePutterState'
@@ -36,6 +36,9 @@ const AdminMDashboard = () => {
   const { putterState, startPollingPutterState, opened } = usePutterState()
   const [messageApi, contextHolder] = message.useMessage()
 
+  const [deviceType, setDeviceType] = useState<'putter' | 'weight'>()
+  const [deviceTypeOpen, setDeviceTypeOpen] = useState(false)
+
   const [updateAvailable, setUpdateAvailable] = useState(false)
   const [versionInfo, versionInfoSet] = useState({
     newVersion: '',
@@ -45,7 +48,7 @@ const AdminMDashboard = () => {
   const checkUpdate = useCallback(async () => {
     try {
       messageApi.loading('正在检查更新...', 0)
-      const { hasUpdate, newVersion, currentVersion } = await callApi('checkAppUpdate')
+      const { hasUpdate } = await callApi('checkAppUpdate')
       if (!hasUpdate) {
         messageApi.destroy()
         messageApi.success('当前已是最新版本')
@@ -140,13 +143,6 @@ const AdminMDashboard = () => {
   const { data: deviceList = [], runAsync: refreshDeviceList } = useRequest(async () => {
     return callApi('listDevices')
   })
-
-  const filterDeviceList = useMemo(() => {
-    // return deviceList.filter((device) => {
-    //   return device.path.includes('usbserial')
-    // })
-    return deviceList
-  }, [deviceList])
   // 确定烟雾报警状态和颜色
   const smokeStatusText = putterState?.烟雾报警标志?.value ? '报警' : '正常'
   const smokeStatusColor = putterState?.烟雾报警标志?.value ? 'error' : 'success'
@@ -171,29 +167,45 @@ const AdminMDashboard = () => {
   const setPutterDeviceOpened = usePuttingEquipmentStore((state) => state.getOpened)
   const setWeightDeviceOpened = useWeightDeviceStore((state) => state.getOpened)
 
-  const toggleStatus = async (device: IDeviceInfo) => {
-    if (device.open) {
-      await callApi('closeDevice', {
-        path: device.path
-      })
-    } else {
-      await callApi('openDevice', {
-        path: device.path
-      })
-      const result = (await callApi('checkPortIsPutterDevice', device.path)) as {
-        isPutterDevice: boolean
-      }
-      // 如果是推杆设备，需要进行初始化
-      if (result.isPutterDevice) {
-        await setPutterDeviceOpened()
-        messageApi.success('推杆设备初始化成功')
+  const toggleStatus = useCallback(
+    async (device: IDeviceInfo, deviceType?: 'putter' | 'weight') => {
+      if (device.open) {
+        await callApi('closeDevice', {
+          path: device.path
+        })
       } else {
-        await setWeightDeviceOpened()
-        messageApi.success('称重设备初始化成功')
+        await callApi('openDevice', {
+          path: device.path,
+          deviceType: deviceType!
+        })
+        // 如果是推杆设备，需要进行初始化
+        if (deviceType === 'putter') {
+          messageApi.success('推杆设备初始化成功')
+        } else {
+          messageApi.success('称重设备初始化成功')
+        }
+        setDeviceTypeOpen(false)
       }
+      await setPutterDeviceOpened()
+      await setWeightDeviceOpened()
+      await refreshDeviceList()
+    },
+    [messageApi, refreshDeviceList, setPutterDeviceOpened, setWeightDeviceOpened]
+  )
+  // 连接设备前的处理
+  const deviceRef = useRef<IDeviceInfo>(null)
+
+  const handleConnnetDevice = useCallback(async () => {
+    if (!deviceType) {
+      messageApi.error('请选择设备类别')
+      return
     }
-    await refreshDeviceList()
-  }
+    if (!deviceRef.current) {
+      messageApi.error('请选择设备')
+      return
+    }
+    await toggleStatus(deviceRef.current, deviceType)
+  }, [deviceType, messageApi, toggleStatus])
 
   return (
     <>
@@ -210,23 +222,23 @@ const AdminMDashboard = () => {
             </Button>
           }
         >
-          {filterDeviceList.map((device) => (
+          {deviceList.map((device) => (
             <div key={device.path} className="mb-2">
               <div className="space-x-10 flex items-center">
                 <div>
                   <span className="text-gray-400">设备路径:</span> {device.path}
                   <span className="">({device.open ? '已打开' : '未开启'})</span>
                 </div>
-                {/* <Select
-                  onChange={(value) => {
-                    console.log(value)
+                <Button
+                  onClick={async () => {
+                    if (!device.open) {
+                      deviceRef.current = device
+                      setDeviceTypeOpen(true)
+                    } else {
+                      await toggleStatus(device)
+                    }
                   }}
-                  placeholder="请选择"
                 >
-                  <Select.Option value="puttter">推杆设备</Select.Option>
-                  <Select.Option value="weightDevice">称重设备</Select.Option>
-                </Select> */}
-                <Button onClick={() => toggleStatus(device)}>
                   {device.open ? '断开' : '打开'}
                 </Button>
               </div>
@@ -280,8 +292,8 @@ const AdminMDashboard = () => {
             </div>
           ))}
         </div>
-        <p className="text-gray-300 py-3 text-sm">设备编号：{deviceCode}</p>
-        <p className="text-gray-300 py-3 text-sm">当前版本：{pkgJson.version}</p>{' '}
+        <p className="text-gray-300 py-3 text-sm mb-0">设备编号：{deviceCode}</p>
+        <p className="text-gray-300 py-3 text-sm mb-0">当前版本：{pkgJson.version}</p>{' '}
         <Button
           onClick={() => {
             callApi('checkSmallUpdate')
@@ -296,6 +308,41 @@ const AdminMDashboard = () => {
         versionInfo={versionInfo}
       />
       {contextHolder}
+      <Modal
+        title="设备类别"
+        open={deviceTypeOpen}
+        onCancel={() => setDeviceTypeOpen(false)}
+        afterClose={async () => {
+          setDeviceType(undefined)
+        }}
+        onOk={handleConnnetDevice}
+        okButtonProps={{
+          disabled: !deviceType
+        }}
+        okText="确定"
+        cancelText="取消"
+        centered
+      >
+        <div className="py-6">
+          <span>设备类别：</span>
+          <Select
+            placeholder="请选择设备类别"
+            className="w-96"
+            options={[
+              {
+                label: '推杆设备',
+                value: 'putter'
+              },
+              {
+                label: '重量称设备',
+                value: 'weight'
+              }
+            ]}
+            value={deviceType}
+            onChange={setDeviceType}
+          />
+        </div>
+      </Modal>
     </>
   )
 }

@@ -4,6 +4,7 @@ import FormData from 'form-data'
 import Service from './service'
 import { sendMessageToWindow } from '.'
 import { app } from 'electron'
+import { listDevices } from './weight'
 
 /**
  * 获取设备唯一标识
@@ -154,15 +155,63 @@ export const handleUserLogout = async () => {
 export const closeDevice = async ({ path }: { path: string }) => {
   const client = Service.getInstance().modbusClient
   client.closePort(path)
+  const isPutter = path === Service.getInstance().store.get('putterDevicePort')
+  if (isPutter) {
+    Service.getInstance().store.delete('putterDevicePort')
+  } else {
+    Service.getInstance().store.delete('weightDevicePort')
+  }
+}
+
+/**
+ * 自动连接设备
+ */
+export const autoConnectDevice = async () => {
+  const putterDevicePort = Service.getInstance().store.get('putterDevicePort') as string
+  const weightDevicePort = Service.getInstance().store.get('weightDevicePort') as string
+  const devices = await listDevices()
+  console.log('🚀 ~ autoConnectDevice ~ putterDevicePort:', putterDevicePort)
+  console.log('🚀 ~ autoConnectDevice ~ weightDevicePort:', weightDevicePort)
+  console.log('🚀 ~ autoConnectDevice ~ i:', devices)
+  if (putterDevicePort && devices.some((device) => device.path === putterDevicePort)) {
+    await openDevice({ path: putterDevicePort, deviceType: 'putter' })
+  }
+  if (weightDevicePort && devices.some((device) => device.path === weightDevicePort)) {
+    await openDevice({ path: weightDevicePort, deviceType: 'weight' })
+  }
 }
 
 /**
  * 打开设备
  * @returns
  */
-export const openDevice = async ({ path }: { path: string }) => {
+export const openDevice = async ({
+  path,
+  deviceType
+}: {
+  path: string
+  deviceType: 'putter' | 'weight'
+}) => {
   const client = Service.getInstance().modbusClient
   await client.openPort(path)
+  Service.getInstance().store.set(
+    deviceType === 'putter' ? 'putterDevicePort' : 'weightDevicePort',
+    path
+  )
+}
+
+export const closeAllDevice = async () => {
+  const client = Service.getInstance().modbusClient
+  const putterDevicePort = Service.getInstance().store.get('putterDevicePort') as string
+  const weightDevicePort = Service.getInstance().store.get('weightDevicePort') as string
+  if (putterDevicePort) {
+    client.closePort(putterDevicePort)
+  }
+  if (weightDevicePort) {
+    client.closePort(weightDevicePort)
+  }
+  Service.getInstance().store.delete('putterDevicePort')
+  Service.getInstance().store.delete('weightDevicePort')
 }
 
 export const getUserInfo = async (): Promise<Omit<UserInfo, 'token'>> => {

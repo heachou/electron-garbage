@@ -1,12 +1,14 @@
 import React from 'react'
 import { useEffect } from 'react'
-import { Alert, Button, message } from 'antd'
+import { Alert, message } from 'antd'
 import useLocalConfigStore from './store/localStore'
 import { useMount } from 'ahooks'
 import { usePutterState } from './hooks/usePutterState'
 import { useWeightDevice } from './hooks/useWeightDevice'
 import useListener from './hooks/useListener'
 import { callApi } from './utils'
+import usePuttingEquipmentStore from './store/puttingEquipmentStore'
+import useWeightDeviceStore from './store/weightDeviceStore'
 
 function App({ children }: { children: React.ReactNode }) {
   const getConfig = useLocalConfigStore((state) => state.getConfig)
@@ -14,6 +16,14 @@ function App({ children }: { children: React.ReactNode }) {
 
   useMount(() => {
     getConfig()
+  })
+
+  const setPutterDeviceOpened = usePuttingEquipmentStore((state) => state.getOpened)
+  const setWeightDeviceOpened = useWeightDeviceStore((state) => state.getOpened)
+  useMount(async () => {
+    await callApi('autoConnectDevice')
+    await setPutterDeviceOpened()
+    await setWeightDeviceOpened()
   })
 
   const {
@@ -30,7 +40,9 @@ function App({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (opened) {
-      startPollingPutterState()
+      setTimeout(() => {
+        startPollingPutterState()
+      }, 1000)
     }
   }, [connectPutterDevice, opened, startPollingPutterState])
 

@@ -245,10 +245,10 @@ const TrashList = () => {
   return (
     <>
       <div className="p-2">
-        <div className="bg-white rounded-lg h-[190px] p-2">
+        <div className=" rounded-lg h-[190px] p-2">
           <div className="grid grid-cols-4 gap-8">
             {trashBins.map((bin) => (
-              <Card key={bin.doorKey}>
+              <Card key={bin.doorKey} className="">
                 <Card.Meta
                   title={
                     <div>
@@ -259,8 +259,8 @@ const TrashList = () => {
                     </div>
                   }
                   description={
-                    <Space direction="vertical" size="small" className="w-full">
-                      <div className="flex items-center space-x-4 py-2">
+                    <>
+                      <div className="flex items-center flex-col space-x-4 py-2">
                         <span>当前重量</span>
                         <span className="font-bold text-2xl text-black">{bin.weight}KG</span>
                       </div>
@@ -274,7 +274,7 @@ const TrashList = () => {
                       >
                         {!opened ? '仓门设备未连接' : !disabled ? '点击开门' : '登录后点击开门'}
                       </Button>
-                    </Space>
+                    </>
                   }
                 />
               </Card>

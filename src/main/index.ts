@@ -62,14 +62,12 @@ function createWindow() {
 
   // 检查全量更新
   addUpdaterListener()
-  const smallestUpdater = addSmallestUpdaterListeners()
+  addSmallestUpdaterListeners()
   // 检查增量更新,每小时一次
-  checkSmallUpdate(smallestUpdater)
+  checkSmallUpdate()
 
   mainWindow.on('closed', () => {
     mainWindow = null
-    Service.getInstance().store.delete('putterDevicePort')
-    Service.getInstance().store.delete('weightDevicePort')
     Service.getInstance().setInstance({ mainWindow: null })
   })
   // 禁止缩放

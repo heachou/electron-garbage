@@ -57,39 +57,37 @@ const PhoneLoginContainer = () => {
 
   return (
     <>
-      <div className="flex flex-col space-y-4 p-6 rounded-xl shadow-sm w-full mx-auto border border-gray-200">
-        <h2 className="text-xl text-gray-600 font-bold">手机号码登录</h2>
-        <Space direction="vertical" size="large" className="w-full">
-          {/* 手机号输入 */}
-          <Input
-            prefix={<MobileOutlined className="text-gray-400 mr-2" />} // 图标和输入框间距
-            placeholder="请输入 11 位手机号码"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} // 只允许输入数字
-            maxLength={11}
-            size="large" // 使用大尺寸输入框
-            allowClear
-            type="tel"
-            onKeyUp={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleLogin()
-              }
-            }}
-            className="rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" // Tailwind 样式
-          />
-          <Button
-            type="primary"
-            icon={<LoginOutlined />}
-            onClick={handleLogin}
-            loading={loginLoading}
-            disabled={isLoginDisabled}
-            size="large"
-            className={`w-full rounded-md transition duration-150 ease-in-out ${isLoginDisabled ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`} // Tailwind 样式
-          >
-            登 录
-          </Button>
-        </Space>
+      <div className="flex flex-col rounded-xl w-full">
+        <h2 className="text-sm text-gray-600 font-bold mb-8">手机号码登录</h2>
+        <Input
+          prefix={<MobileOutlined className="text-gray-400 mr-2" />} // 图标和输入框间距
+          placeholder="请输入 11 位手机号码"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} // 只允许输入数字
+          maxLength={11}
+          size="large" // 使用大尺寸输入框
+          allowClear
+          type="tel"
+          addonBefore={'+86'}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              handleLogin()
+            }
+          }}
+          className="rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+        />
+        <Button
+          type="primary"
+          icon={<LoginOutlined />}
+          onClick={handleLogin}
+          loading={loginLoading}
+          disabled={isLoginDisabled}
+          size="large"
+          className={`w-full rounded-md mt-12 h-[60px] bg-primary text-white hover:bg-primary`}
+        >
+          登 录
+        </Button>
       </div>
       {messageContext}
     </>

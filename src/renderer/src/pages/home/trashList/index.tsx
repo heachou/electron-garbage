@@ -20,11 +20,10 @@ import useDeliveryAction from '@renderer/hooks/useDeliveryAction'
 import { usePutterState } from '@renderer/hooks/usePutterState'
 import ChineseNumberSpeaker from '@renderer/components/chineseNumberSpeaker'
 import RealTimeSpeechRecognition from '@renderer/components/RealTimeSpeechRecognition'
+import { garbageTypeConfig } from '@renderer/const'
 
-// 定义垃圾箱状态类型
 type TrashStatus = 'normal' | 'fault'
 
-// 定义垃圾箱数据接口
 interface TrashBin {
   name?: string
   weight: number // 单位：千克
@@ -244,42 +243,39 @@ const TrashList = () => {
 
   return (
     <>
-      <div className="p-2">
-        <div className=" rounded-lg h-[190px] p-2">
-          <div className="grid grid-cols-4 gap-8">
-            {trashBins.map((bin) => (
-              <Card key={bin.doorKey} className="">
-                <Card.Meta
-                  title={
-                    <div>
-                      <span>{bin.name}</span>
-                      <Tag color={bin.status === 'normal' ? 'success' : 'error'} className="ml-2">
-                        {bin.status === 'normal' ? '正常' : '满仓'}
-                      </Tag>
-                    </div>
-                  }
-                  description={
-                    <>
-                      <div className="flex items-center flex-col space-x-4 py-2">
-                        <span>当前重量</span>
-                        <span className="font-bold text-2xl text-black">{bin.weight}KG</span>
-                      </div>
-                      <Button
-                        block
-                        disabled={disabled}
-                        type="primary"
-                        className="bg-primary"
-                        onClick={() => handleOpenPutterDevice(bin)}
-                        size="large"
-                      >
-                        {!opened ? '仓门设备未连接' : !disabled ? '点击开门' : '登录后点击开门'}
-                      </Button>
-                    </>
-                  }
-                />
-              </Card>
-            ))}
-          </div>
+      <div className=" rounded-lg p-2 flex-shrink-0">
+        <div className="grid grid-cols-4 gap-6">
+          {trashBins.map((bin) => {
+            const config = garbageTypeConfig[bin.name as keyof typeof garbageTypeConfig]
+            return (
+              <div key={bin.doorKey} className="bg-white rounded-lg p-2">
+                <div
+                  className="flex items-center justify-center flex-col py-2 rounded-t-md"
+                  style={{
+                    backgroundColor: config?.color
+                  }}
+                >
+                  <img src={config?.icon} alt={config?.name} className="w-12 h-12" />
+                  <span className="text-lg font-bold">{config?.name}</span>
+                  <span className="text-xs">{config?.enName}</span>
+                </div>
+                <div className="flex items-center flex-col space-x-4 py-4">
+                  <span className="text-gray-500">当前重量</span>
+                  <span className="font-bold text-3xl text-black">{bin.weight}KG</span>
+                </div>
+                <Button
+                  block
+                  disabled={disabled}
+                  type="primary"
+                  className="bg-primary"
+                  onClick={() => handleOpenPutterDevice(bin)}
+                  size="large"
+                >
+                  {!opened ? '仓门设备未连接' : !disabled ? '点击开门' : '登录后点击开门'}
+                </Button>
+              </div>
+            )
+          })}
         </div>
       </div>
       {open && <DoorOpenStatusModal countdown={countdown} onClose={() => openSet(false)} />}

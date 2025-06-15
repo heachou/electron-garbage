@@ -22,12 +22,12 @@ const Home = () => {
 
   return (
     <div className="relative" style={{ backgroundImage: `url(${bg})`, backgroundSize: 'cover' }}>
-      <div className="h-screen py-2 flex items-center">
-        <div className="flex-1 flex flex-col space-y-5 h-full min-w-0">
+      <div className="h-screen py-3 flex items-center">
+        <div className="flex-1 flex flex-col space-y-5 h-full min-w-0 justify-between">
           <Advertise />
           <TrashList />
         </div>
-        <div className="w-[500px] h-full px-2">
+        <div className="w-[500px] h-full">
           <AuthContainer />
         </div>
       </div>

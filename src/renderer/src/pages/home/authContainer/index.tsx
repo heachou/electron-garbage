@@ -38,7 +38,6 @@ const LoginContainer = () => {
       manual: true
     }
   )
-  console.log('🚀 ~ LoginContainer ~ putInReccordsRes:', putInReccordsRes)
 
   const showModal = () => {
     setIsModalVisible(true)
@@ -65,7 +64,7 @@ const LoginContainer = () => {
       </div>
       <Button
         onClick={showModal}
-        className="absolute right-8 top-4 bg-primary text-white"
+        className="absolute right-6 top-6 bg-primary text-white"
         type="primary"
       >
         设备投递记录

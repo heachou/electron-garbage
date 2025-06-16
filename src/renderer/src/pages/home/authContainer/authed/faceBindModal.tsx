@@ -88,14 +88,12 @@ const FaceBindModal = ({ open, onClose }: Props) => {
     {
       manual: true,
       onSuccess: () => {
-        console.log('🚀 ~ FaceBindModal ~ onSuccess:')
         messageApi.success('人脸绑定成功')
         cancelSleep()
         refreshUserInfo()
         closeCamera()
       },
-      onError: (error) => {
-        console.log('🚀 ~ FaceBindModal ~ onError:', error)
+      onError: () => {
         if (errorCountRef.current < 30) {
           errorCountRef.current++
           startFaceLogin()

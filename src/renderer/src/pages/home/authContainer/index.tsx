@@ -52,7 +52,9 @@ const LoginContainer = () => {
     <>
       <div className="flex-1 min-h-0 px-2 relative h-full">
         <div className="bg-white flex w-full h-full justify-center items-center rounded-md">
-          <Card className="w-full shadow-none border-none">{user ? <Authed /> : <UnAuth />}</Card>
+          <Card className="w-full shadow-none border-none h-full">
+            {user ? <Authed /> : <UnAuth />}
+          </Card>
         </div>
         <span
           className="absolute right-4 bottom-2 flex items-center justify-center space-x-1 cursor-pointer text-gray-700"

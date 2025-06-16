@@ -1,7 +1,12 @@
-import { parseResponseWithContext } from '../utils/modbusUtils'
 import Service from './service'
 
-export const setLocalConfig = (key: keyof IConfig, value: IConfig[keyof IConfig]): IConfig => {
+const initialConfig: IConfig = {
+  canPutWithoutAuth: true,
+  maxOnlineTime: 180,
+  screenSaver: 15
+}
+
+export const setLocalConfig = <K extends keyof IConfig>(key: K, value: IConfig[K]): IConfig => {
   const store = Service.getInstance().store
   let config = store.get('config') as IConfig
   if (!config) {
@@ -15,5 +20,12 @@ export const setLocalConfig = (key: keyof IConfig, value: IConfig[keyof IConfig]
 export const getLocalConfig = (): IConfig => {
   const store = Service.getInstance().store
   const config = store.get('config') as IConfig
-  return config || {}
+  if (!config) {
+    store.set('config', initialConfig)
+    return initialConfig
+  }
+  return {
+    ...initialConfig,
+    ...config
+  }
 }

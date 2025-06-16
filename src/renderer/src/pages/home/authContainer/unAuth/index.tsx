@@ -24,9 +24,8 @@ const UnAuth = () => {
     },
     {
       retryCount: 3,
-      onSuccess: (res) => {
+      onSuccess: () => {
         startGetScanQrCodeResult()
-        console.log('扫码登录二维码生成成功', res)
       }
     }
   )
@@ -37,9 +36,8 @@ const UnAuth = () => {
     },
     {
       retryCount: 3,
-      onSuccess: (res) => {
+      onSuccess: () => {
         startGetErWeiQrCodeResult()
-        console.log('扫码登录二维码生成成功', res)
       }
     }
   )

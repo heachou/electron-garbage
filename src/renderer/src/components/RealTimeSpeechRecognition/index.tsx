@@ -179,7 +179,7 @@ const RealTimeSpeechRecognition = ({ token, onIdentifySuccess }: IProps) => {
       <>
         <span
           onClick={toggleRecording}
-          className="fixed z-10 cursor-pointer right-6 bottom-32 w-16 h-16 flex items-center justify-center bg-white rounded-full"
+          className="fixed z-10 cursor-pointer right-10 bottom-24 w-16 h-16 flex items-center justify-center bg-white rounded-full"
         >
           <div className="mic-btn-wave">
             <i className="outer-loop"></i>
@@ -214,7 +214,7 @@ const RealTimeSpeechRecognition = ({ token, onIdentifySuccess }: IProps) => {
           }
           toggleRecording()
         }}
-        className="fixed z-20 cursor-pointer right-6 bottom-32 bg-white w-16 h-16 flex items-center justify-center overflow-hidden border-2 border-solid border-[#0070cc] rounded-full"
+        className="fixed z-20 cursor-pointer right-10 bottom-24 bg-white w-16 h-16 flex items-center justify-center overflow-hidden border-2 border-solid border-[#0070cc] rounded-full"
       >
         <img src={micAvif} alt="mic" className="w-6 overflow-hidden" />
       </span>

@@ -1,4 +1,3 @@
-import { INACTIVITY_TIMEOUT_MS } from '@renderer/const'
 import { useInactivityTimeout } from '@renderer/hooks/useInactivityTimeout'
 import Advertise from './advertise'
 import AuthContainer from './authContainer'
@@ -6,13 +5,18 @@ import TrashList from './trashList'
 import { useNavigate } from 'react-router-dom'
 import useLongPress from '@renderer/hooks/useLongPress'
 import bg from '@renderer/assets/icons/bg.png'
+import useLocalConfigStore from '@renderer/store/localStore'
 
 const Home = () => {
   const navigate = useNavigate()
+  const config = useLocalConfigStore((state) => state.config)
 
-  useInactivityTimeout(() => {
-    navigate('/ads')
-  }, INACTIVITY_TIMEOUT_MS)
+  useInactivityTimeout(
+    () => {
+      navigate('/ads')
+    },
+    (config?.screenSaver || 15) * 60 * 1000
+  )
 
   const longPressEvents = useLongPress({
     onLongPress: () => {
@@ -35,7 +39,7 @@ const Home = () => {
         {...longPressEvents}
         className="absolute cursor-pointer select-none px-4 py-1 rounded left-1/2 -translate-x-1/2 w-40 text-center bg-primary text-white top-0"
       >
-        城洁环保
+        城洁云分类
       </span>
     </div>
   )

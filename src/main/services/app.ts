@@ -170,9 +170,6 @@ export const autoConnectDevice = async () => {
   const putterDevicePort = Service.getInstance().store.get('putterDevicePort') as string
   const weightDevicePort = Service.getInstance().store.get('weightDevicePort') as string
   const devices = await listDevices()
-  console.log('🚀 ~ autoConnectDevice ~ putterDevicePort:', putterDevicePort)
-  console.log('🚀 ~ autoConnectDevice ~ weightDevicePort:', weightDevicePort)
-  console.log('🚀 ~ autoConnectDevice ~ i:', devices)
   if (putterDevicePort && devices.some((device) => device.path === putterDevicePort)) {
     await openDevice({ path: putterDevicePort, deviceType: 'putter' })
   }
@@ -216,7 +213,6 @@ export const closeAllDevice = async () => {
 
 export const getUserInfo = async (): Promise<Omit<UserInfo, 'token'>> => {
   const res = await request.post('/mini/api/user/info')
-  console.log('🚀 ~ getUserInfo ~ res:', res)
   return res.data
 }
 

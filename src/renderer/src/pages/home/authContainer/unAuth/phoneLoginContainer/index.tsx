@@ -79,12 +79,11 @@ const PhoneLoginContainer = () => {
         />
         <Button
           type="primary"
-          icon={<LoginOutlined />}
           onClick={handleLogin}
           loading={loginLoading}
           disabled={isLoginDisabled}
           size="large"
-          className={`w-full rounded-md mt-12 h-[60px] bg-primary text-white hover:bg-primary`}
+          className={`w-full rounded-md mt-12  text-xl h-[60px] bg-primary text-white`}
         >
           登 录
         </Button>

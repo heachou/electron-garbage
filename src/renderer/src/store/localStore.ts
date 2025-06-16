@@ -4,6 +4,7 @@ import { immer } from 'zustand/middleware/immer'
 
 interface IUseUserInfoState {
   config: IConfig | null
+  getConfig: () => void
 }
 
 interface IUserInfoDispatch {

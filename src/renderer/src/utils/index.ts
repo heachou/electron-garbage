@@ -1,5 +1,4 @@
 import { TRegisterConfigNames } from '@/main/data'
-import { hazardousWaste, kitchenWaste, otherWaste, recyclableWaste } from '@renderer/const/garbage'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
@@ -174,12 +173,18 @@ export function numberToChinese(num: number): string {
   return prefix + integerChinese
 }
 
-export function identifyAllGarbage(text: string): GarbageInfo[] {
+export function identifyAllGarbage(
+  text: string,
+  garbageKindList: Record<
+    'kitchenWaste' | 'hazardousWaste' | 'recyclableWaste' | 'otherWaste',
+    string[]
+  >
+): GarbageInfo[] {
   const allGarbageTypes = [
-    { type: '厨余垃圾', list: [...kitchenWaste, '厨余垃圾'] },
-    { type: '可回收物', list: [...recyclableWaste, '可回收物'] },
-    { type: '有害垃圾', list: [...hazardousWaste, '有害垃圾'] },
-    { type: '其他垃圾', list: [...otherWaste, '其他垃圾'] }
+    { type: '厨余垃圾', list: [...garbageKindList.kitchenWaste, '厨余垃圾'] },
+    { type: '可回收物', list: [...garbageKindList.recyclableWaste, '可回收物'] },
+    { type: '有害垃圾', list: [...garbageKindList.hazardousWaste, '有害垃圾'] },
+    { type: '其他垃圾', list: [...garbageKindList.otherWaste, '其他垃圾'] }
   ]
 
   const foundItems: GarbageInfo[] = []

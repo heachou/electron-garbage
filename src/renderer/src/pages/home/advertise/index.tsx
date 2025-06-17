@@ -2,14 +2,16 @@ import { MEDIA_TYPE } from '@/main/data'
 import { mediaDomain } from '@renderer/const'
 import { callApi } from '@renderer/utils'
 import { useRequest } from 'ahooks'
-import { Carousel, Card } from 'antd'
+import { Carousel } from 'antd'
 import { useMemo } from 'react'
 import leftIcon from '@renderer/assets/icons/left.png'
 import rightIcon from '@renderer/assets/icons/right.png'
 
 const Advertise = () => {
   const { data: medias } = useRequest(async () => callApi('getMediaList', {}), {
-    cacheKey: 'getMediaList'
+    cacheKey: 'getMediaList',
+    staleTime: 120 * 1000,
+    pollingInterval: 60 * 1000 * 60 * 24 // 1小时轮询一次
   })
 
   const carouselItems = useMemo(() => {
@@ -19,7 +21,8 @@ const Advertise = () => {
       ?.filePath.map((path, index) => ({
         id: index,
         alt: path,
-        imageUrl: `${mediaDomain}${path}`
+        imageUrl: `${mediaDomain}${path}`,
+        isVideo: ['mp4', 'avi', 'mov'].includes(path.split('.').pop() || '')
       }))
   }, [medias])
 
@@ -29,7 +32,7 @@ const Advertise = () => {
         <div className="w-full">
           <Carousel
             autoplay
-            autoplaySpeed={10000}
+            autoplaySpeed={15 * 1000}
             className="h-full"
             nextArrow={
               <div className="bg-white rounded-full p-2">
@@ -47,11 +50,22 @@ const Advertise = () => {
                 key={item.id}
                 className="overflow-hidden rounded h-full items-center justify-center"
               >
-                <img
-                  src={item.imageUrl}
-                  alt={item.alt}
-                  className="w-auto h-full object-cover mx-auto"
-                />
+                {item.isVideo ? (
+                  <video
+                    src={item.imageUrl}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-auto h-full object-cover mx-auto"
+                  />
+                ) : (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.alt}
+                    className="w-auto h-full object-cover mx-auto"
+                  />
+                )}
               </div>
             ))}
           </Carousel>

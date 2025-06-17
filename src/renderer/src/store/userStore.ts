@@ -1,6 +1,6 @@
 import { LOGOUT_DELAY_SECONDS } from '@renderer/const'
 import { callApi } from '@renderer/utils'
-import { create, StoreApi, UseBoundStore } from 'zustand'
+import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 interface IUseUserInfoState {

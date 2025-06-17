@@ -2,12 +2,13 @@ import { useState, useRef, useCallback, useMemo } from 'react'
 import micAvif from './mic.avif'
 import micSvg from './mic.svg'
 import './index.css'
-import { useDebounceEffect, useUnmount, useWebSocket } from 'ahooks'
+import { useDebounceEffect, useRequest, useUnmount, useWebSocket } from 'ahooks'
 import { AUDIO_APP_ID } from '@renderer/const'
-import { generateUUID, identifyAllGarbage } from '@renderer/utils'
+import { callApi, generateUUID, identifyAllGarbage } from '@renderer/utils'
 import askAudio from '@renderer/assets/mp3/ask.mp3'
 import { Tooltip } from 'antd'
 import { ReadyState } from 'ahooks/lib/useWebSocket'
+import useGarbageKindStore from '@renderer/store/garbageStore'
 
 interface IProps {
   token: string
@@ -145,12 +146,14 @@ const RealTimeSpeechRecognition = ({ token, onIdentifySuccess }: IProps) => {
     activeSet(!active)
   }, [active, startRecording])
 
+  const garbageKindList = useGarbageKindStore((state) => state.garbageKindList)
+
   useDebounceEffect(() => {
     const text = messages
       .slice(-5)
       .map((item) => item.content)
       .join('')
-    const result = identifyAllGarbage(text)
+    const result = identifyAllGarbage(text, garbageKindList)
     if (result.length) {
       toggleRecording()
       disconnect()

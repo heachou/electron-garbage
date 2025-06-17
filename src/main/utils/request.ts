@@ -1,7 +1,5 @@
 import axios, { AxiosError } from 'axios'
 import Service from '../services/service'
-import { notificationService } from '../module/notification'
-import { sendMessageToWindow } from '../services'
 import { showErrorMessage } from '.'
 
 const baseURL = import.meta.env.VITE_API_HOST
@@ -52,8 +50,10 @@ request.interceptors.response.use(
     if (!response.config.skipNotification && response.data.msg) {
       showErrorMessage(response.data.msg)
     }
-    console.log('🚀 ~ data:', response.data)
-
+    // 处理返回的 text 类型
+    if (response.config.responseType === 'text') {
+      return response.data
+    }
     return Promise.reject(response.data)
   },
   (error: AxiosError) => {

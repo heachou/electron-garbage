@@ -6,6 +6,7 @@ import Service from './services/service'
 import { encodeError } from './utils'
 import { is } from '@electron-toolkit/utils'
 import { addSmallestUpdaterListeners, addUpdaterListener, checkSmallUpdate } from './module/updater'
+import { getGarbageKindList } from './services/media'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -58,13 +59,12 @@ function createWindow() {
     mainWindow?.show()
     mainWindow?.setAlwaysOnTop(true, 'screen-saver')
     mainWindow?.maximize()
+    // 检查全量更新
+    addUpdaterListener()
+    addSmallestUpdaterListeners()
+    // 检查增量更新,每小时一次
+    checkSmallUpdate()
   })
-
-  // 检查全量更新
-  addUpdaterListener()
-  addSmallestUpdaterListeners()
-  // 检查增量更新,每小时一次
-  checkSmallUpdate()
 
   mainWindow.on('closed', () => {
     mainWindow = null

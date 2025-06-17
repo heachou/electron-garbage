@@ -2,13 +2,14 @@ import React from 'react'
 import { useEffect } from 'react'
 import { Alert, message } from 'antd'
 import useLocalConfigStore from './store/localStore'
-import { useMount } from 'ahooks'
+import { useMount, useRequest } from 'ahooks'
 import { usePutterState } from './hooks/usePutterState'
 import { useWeightDevice } from './hooks/useWeightDevice'
 import useListener from './hooks/useListener'
 import { callApi } from './utils'
 import usePuttingEquipmentStore from './store/puttingEquipmentStore'
 import useWeightDeviceStore from './store/weightDeviceStore'
+import useGarbageKindStore from './store/garbageStore'
 
 function App({ children }: { children: React.ReactNode }) {
   const getConfig = useLocalConfigStore((state) => state.getConfig)
@@ -25,6 +26,17 @@ function App({ children }: { children: React.ReactNode }) {
     await setPutterDeviceOpened()
     await setWeightDeviceOpened()
   })
+
+  const fetchGarbageKindList = useGarbageKindStore((state) => state.fetchGarbageKindList)
+
+  useRequest(
+    async () => {
+      return fetchGarbageKindList()
+    },
+    {
+      pollingInterval: 60 * 1000 * 60
+    }
+  )
 
   const {
     startPutterDeviceEnable,

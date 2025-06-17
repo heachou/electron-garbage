@@ -256,8 +256,8 @@ const TrashList = () => {
                   }}
                 >
                   <img src={config?.icon} alt={config?.name} className="w-12 h-12" />
-                  <span className="text-lg font-bold">{config?.name}</span>
-                  <span className="text-xs">{config?.enName}</span>
+                  <span className="text-lg font-bold text-white">{config?.name}</span>
+                  <span className="text-xs text-white">{config?.enName}</span>
                 </div>
                 <div className="flex items-center flex-col space-x-4 py-4">
                   <span className="text-gray-500">当前重量</span>

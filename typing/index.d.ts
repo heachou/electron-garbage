@@ -100,8 +100,22 @@ interface IDeviceInfoRes {
   }
 }
 
-interface IConfig {
-  canPutWithoutAuth: boolean
+interface ITimeEnableConfig {
+  timingEnable_1: boolean
+  timingEnable_2: boolean
+  timingEnable_3: boolean
+  timingEnable_4: boolean
+  timingEnable_1_range: string[]
+  timingEnable_2_range: string[]
+  timingEnable_3_range: string[]
+  timingEnable_4_range: string[]
+}
+
+interface ISystemConfig {
+  maxOnlineTime: number
+  screenSaver: number
+  unAuth: ITimeEnableConfig
+  auth: ITimeEnableConfig
 }
 
 interface IPutInStatRes {

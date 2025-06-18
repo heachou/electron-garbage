@@ -1,31 +1,42 @@
+import { defaultSystemConfig } from '../const/config'
 import Service from './service'
 
-const initialConfig: IConfig = {
-  canPutWithoutAuth: true,
-  maxOnlineTime: 180,
-  screenSaver: 15
-}
-
-export const setLocalConfig = <K extends keyof IConfig>(key: K, value: IConfig[K]): IConfig => {
+export const setLocalConfig = (key: string | string[], value: unknown): ISystemConfig => {
   const store = Service.getInstance().store
-  let config = store.get('config') as IConfig
+  const keys = typeof key === 'string' ? key.split('.') : (key as string[])
+  let config = store.get('config') as ISystemConfig
   if (!config) {
-    config = {} as IConfig
+    config = {} as ISystemConfig
   }
-  config[key] = value
+  let temp = config
+
+  while (keys.length) {
+    const k = keys.shift()
+    if (keys.length) {
+      if (!temp[k]) {
+        temp[k] = {}
+      }
+      temp = temp[k] as ISystemConfig
+    } else {
+      temp[k] = value
+    }
+  }
+
+  console.log('🚀 ~ setLocalConfig ~ config:', config)
+
   store.set('config', config)
   return config
 }
 
-export const getLocalConfig = (): IConfig => {
+export const getLocalConfig = (): ISystemConfig => {
   const store = Service.getInstance().store
-  const config = store.get('config') as IConfig
+  const config = store.get('config') as ISystemConfig
   if (!config) {
-    store.set('config', initialConfig)
-    return initialConfig
+    store.set('config', defaultSystemConfig)
+    return defaultSystemConfig
   }
   return {
-    ...initialConfig,
+    ...defaultSystemConfig,
     ...config
   }
 }

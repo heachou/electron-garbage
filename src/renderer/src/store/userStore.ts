@@ -15,7 +15,7 @@ interface IUserInfoDispatch {
   logout: () => void // 显式声明 logout 类型
   getScoreData: () => Promise<void> // 新增：获取用户积分数据
 }
-// @ts-ignore 暂时忽略类型错误
+
 const useUserStore = create<IUseUserInfoState & IUserInfoDispatch>()(
   immer((set, get) => ({
     userInfo: null,

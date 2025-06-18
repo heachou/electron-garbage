@@ -9,6 +9,7 @@ import { useRequest } from 'ahooks'
 import { callApi, convertToKg } from '@renderer/utils'
 import AutoCloseModal from '@renderer/components/autoCloseModal'
 import dayjs from 'dayjs'
+import pkg from '../../../../../../package.json'
 
 const { Text } = Typography
 
@@ -51,7 +52,7 @@ const LoginContainer = () => {
   return (
     <>
       <div className="flex-1 min-h-0 px-2 relative h-full">
-        <div className="bg-white flex w-full h-full justify-center items-center rounded-md">
+        <div className="bg-white flex flex-col w-full h-full justify-center items-center rounded-md">
           <Card className="w-full shadow-none border-none h-full">
             {user ? <Authed /> : <UnAuth />}
           </Card>
@@ -63,6 +64,7 @@ const LoginContainer = () => {
           <span className="text-xs">设备码</span>
           <QrcodeOutlined className="text-2xl" />
         </span>
+        <span className="text-xs text-gray-600 bottom-2 left-8 absolute">版本：{pkg.version}</span>
       </div>
       <Button
         onClick={showModal}

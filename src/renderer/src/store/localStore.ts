@@ -3,13 +3,13 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 interface IUseUserInfoState {
-  config: IConfig | null
+  config: ISystemConfig | null
   getConfig: () => void
 }
 
 interface IUserInfoDispatch {
   getConfig: () => void
-  updateConfig: (key: keyof IConfig, value: IConfig[keyof IConfig]) => void
+  updateConfig: (key: string | string[], value: unknown) => void
 }
 
 const useLocalConfigStore = create<IUseUserInfoState & IUserInfoDispatch>()(
@@ -21,10 +21,10 @@ const useLocalConfigStore = create<IUseUserInfoState & IUserInfoDispatch>()(
         config: result
       })
     },
-    async updateConfig(key: keyof IConfig, value: IConfig[keyof IConfig]) {
+    async updateConfig(key: string | string[], value: unknown) {
       const config = await callApi('setLocalConfig', key, value)
-      set({
-        config
+      set((state) => {
+        state.config = config
       })
       return config
     }

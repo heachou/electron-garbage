@@ -10,6 +10,7 @@ import { callApi } from './utils'
 import usePuttingEquipmentStore from './store/puttingEquipmentStore'
 import useWeightDeviceStore from './store/weightDeviceStore'
 import useGarbageKindStore from './store/garbageStore'
+import useTimeEnableConfigSync from './hooks/useTimeEnableConfigSync'
 
 function App({ children }: { children: React.ReactNode }) {
   const getConfig = useLocalConfigStore((state) => state.getConfig)
@@ -78,31 +79,29 @@ function App({ children }: { children: React.ReactNode }) {
   })
 
   useListener('sessionExpired', () => {
-    // 用户退出登录
-    if (opened) {
-      startPutterDeviceEnable(!!config?.canPutWithoutAuth)
-    }
     if (weightDeviceOpened) {
       // 获取一次重量
       startPollingWeightDevice()
     }
   })
 
-  useEffect(() => {
-    if (!config) {
-      return
-    }
-    if (!opened) {
-      return
-    }
-    // 如果可以不登录直接投递
-    if (config?.canPutWithoutAuth) {
-      startPutterDeviceEnable(true)
-    } else {
-      // 否则，关闭所有的定时使能选项
-      startPutterDeviceEnable(false)
-    }
-  }, [config, config?.canPutWithoutAuth, opened])
+  useTimeEnableConfigSync()
+
+  // useEffect(() => {
+  //   if (!config) {
+  //     return
+  //   }
+  //   if (!opened) {
+  //     return
+  //   }
+  //   // 如果可以不登录直接投递
+  //   if (config?.canPutWithoutAuth) {
+  //     startPutterDeviceEnable(true)
+  //   } else {
+  //     // 否则，关闭所有的定时使能选项
+  //     startPutterDeviceEnable(false)
+  //   }
+  // }, [config, config?.canPutWithoutAuth, opened])
 
   const [messageApi, messgeContext] = message.useMessage()
   useListener('showErrorMessage', (msg) => {

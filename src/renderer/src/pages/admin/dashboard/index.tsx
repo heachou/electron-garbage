@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   SettingOutlined, // 推杆设置
@@ -17,7 +17,6 @@ import usePuttingEquipmentStore from '@renderer/store/puttingEquipmentStore'
 import useWeightDeviceStore from '@renderer/store/weightDeviceStore'
 import UpdateVersionModal from './updateVersionModal'
 import { useWeightDevice } from '@renderer/hooks/useWeightDevice'
-import pkgJson from '../../../../../../package.json'
 
 const { Title } = Typography
 
@@ -293,14 +292,6 @@ const AdminMDashboard = () => {
           ))}
         </div>
         <p className="text-gray-300 py-3 text-sm mb-0">设备编号：{deviceCode}</p>
-        <p className="text-gray-300 py-3 text-sm mb-0">当前版本：{pkgJson.version}</p>{' '}
-        <Button
-          onClick={() => {
-            callApi('checkSmallUpdate')
-          }}
-        >
-          检查更新
-        </Button>
       </div>
       <UpdateVersionModal
         open={updateAvailable}

@@ -55,8 +55,11 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-
-  setupSecurity()
+  try {
+    setupSecurity()
+  } catch (error) {
+    console.log('🚀 ~ createWindow ~ error:', error)
+  }
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()

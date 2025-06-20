@@ -17,7 +17,7 @@ class Service {
     publish: {
       url: `${baseURL}/smallest-updates`
     },
-    autoDownload: false,
+    autoDownload: true,
     forceDevUpdateConfig: true
   })
 

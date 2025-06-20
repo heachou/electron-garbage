@@ -120,7 +120,7 @@ export function addUpdaterListener() {
       })
       .then(({ response }) => {
         if (response === 1) {
-          autoUpdater.quitAndInstall(false, true) // 退出并安装重启
+          autoUpdater.quitAndInstall() // 退出并安装重启
         }
       })
   })

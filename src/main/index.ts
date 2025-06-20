@@ -20,6 +20,8 @@ function createWindow() {
     frame: false,
     titleBarStyle: 'hidden',
     alwaysOnTop: true,
+    kiosk: true,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,

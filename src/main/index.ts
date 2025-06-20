@@ -1,9 +1,9 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, BrowserWindow, globalShortcut, ipcMain, screen } from 'electron'
 import { join } from 'path'
 import { createApplicationMenu } from './menu'
 import createIpcHandlers from './services'
 import Service from './services/service'
-import { encodeError } from './utils'
+import { encodeError, setupSecurity } from './utils'
 import { is } from '@electron-toolkit/utils'
 import { addSmallestUpdaterListeners, addUpdaterListener, checkSmallUpdate } from './module/updater'
 
@@ -56,6 +56,8 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  setupSecurity()
+
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
     mainWindow?.setAlwaysOnTop(true, 'screen-saver')
@@ -69,6 +71,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
+    globalShortcut.unregisterAll()
     Service.getInstance().setInstance({ mainWindow: null })
   })
   // 禁止缩放
@@ -103,8 +106,13 @@ if (!gotTheLock) {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    globalShortcut.unregisterAll()
     app.quit()
   }
+})
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
 })
 
 app.on('activate', () => {

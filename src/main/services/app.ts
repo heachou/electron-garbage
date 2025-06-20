@@ -5,6 +5,7 @@ import Service from './service'
 import { sendMessageToWindow } from '.'
 import { app } from 'electron'
 import { listDevices } from './weight'
+import { autoUpdater } from 'electron-updater'
 
 /**
  * 获取设备唯一标识
@@ -237,5 +238,12 @@ export const adminLogin = async ({
  * 关闭应用
  */
 export const closeApp = () => {
+  Service.getInstance().smallestUpdater.removeAllListeners()
+  autoUpdater.removeAllListeners()
+  const mainWindow = Service.getInstance().mainWindow
+  if (mainWindow) {
+    mainWindow.removeAllListeners()
+    mainWindow.close()
+  }
   app.quit()
 }

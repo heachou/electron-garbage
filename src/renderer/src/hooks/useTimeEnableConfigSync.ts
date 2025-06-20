@@ -7,7 +7,11 @@ import { timeConfigAddressConfig } from '@/main/const/config'
 import dayjs from 'dayjs'
 import { callApi } from '@renderer/utils'
 
-const useTimeEnableConfigSync = () => {
+interface IUseTimeEnableConfigSyncProps {
+  onSuccess?: () => Promise<void>
+}
+
+const useTimeEnableConfigSync = ({ onSuccess }: IUseTimeEnableConfigSyncProps) => {
   const config = useLocalConfigStore((state) => state.config)
   const user = useUserStore((state) => state.userInfo)
   const putterDeviceOpended = usePuttingEquipmentStore((state) => state.opened)
@@ -85,29 +89,22 @@ const useTimeEnableConfigSync = () => {
   useRequest(
     async () => {
       if (!putterDeviceOpended) {
-        return
+        return Promise.reject()
       }
       if (!finalConfig) {
-        return
+        return Promise.reject()
       }
       // 执行同步
       await syncTimeEnableConfig(finalConfig)
     },
     {
       ready: putterDeviceOpended,
-      refreshDeps: [finalConfig]
+      refreshDeps: [finalConfig],
+      async onSuccess() {
+        await onSuccess?.()
+      }
     }
   )
-
-  // 时间同步
-  // useRequest(
-  //   async () => {
-  //     return callApi(')
-  //   },
-  //   {
-  //     ready: putterDeviceOpended
-  //   }
-  // )
 }
 
 export default useTimeEnableConfigSync

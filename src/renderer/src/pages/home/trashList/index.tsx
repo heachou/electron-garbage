@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Tag, Button, message } from 'antd'
+import { Button, message } from 'antd'
 import useUserStore from '@renderer/store/userStore'
 import {
   callApi,
@@ -14,13 +14,13 @@ import useWeightDeviceStore from '@renderer/store/weightDeviceStore'
 import dayjs from 'dayjs'
 import DoorOpenStatusModal from './doorOpenStatusModal'
 import { useRequest } from 'ahooks'
-import useLocalConfigStore from '@renderer/store/localStore'
 import { useAutoCloseModal } from '@renderer/hooks/useAutoCloseModal'
 import useDeliveryAction from '@renderer/hooks/useDeliveryAction'
 import { usePutterState } from '@renderer/hooks/usePutterState'
 import ChineseNumberSpeaker from '@renderer/components/chineseNumberSpeaker'
 import RealTimeSpeechRecognition from '@renderer/components/RealTimeSpeechRecognition'
 import { garbageTypeConfig } from '@renderer/const'
+import useLocalConfigStore from '@renderer/store/localStore'
 
 type TrashStatus = 'normal' | 'fault'
 
@@ -38,6 +38,18 @@ const TrashList = () => {
   const putterState = usePuttingEquipmentStore((state) => state.putterState)
   const weightState = useWeightDeviceStore((state) => state.weightState)
   const getScoreData = useUserStore((state) => state.getScoreData)
+  const config = useLocalConfigStore((state) => state.config)
+
+  const isTimeEnableOff = useMemo(() => {
+    const { auth, unAuth } = config || {}
+    const timeConfig = !loginUser ? unAuth : auth
+    return [
+      timeConfig?.timingEnable_1,
+      timeConfig?.timingEnable_2,
+      timeConfig?.timingEnable_3,
+      timeConfig?.timingEnable_4
+    ].some((flag) => flag === false)
+  }, [config, loginUser])
 
   const openDoorTimeConfig = useMemo(() => {
     return generateDoorTimeConfigForAllDoors(putterState)
@@ -170,29 +182,32 @@ const TrashList = () => {
         })
         return
       }
-      const doorTimeConfigList = openDoorTimeConfig?.[bin.doorKey]
-      if (!doorTimeConfigList?.length) {
-        message.error('请先配置时间')
-        return
-      }
-      const isTimeOK = doorTimeConfigList.some((item) => {
-        const { startTime, endTime } = item
-        return isTimeInRange(startTime, endTime, dayjs().format('YYYY-MM-DD HH:mm:ss'))
-      })
-      if (!isTimeOK) {
-        showModal({
-          type: 'error',
-          title: '投放时段提示',
-          content: '很抱歉，当前不在投放时段，请按时投放',
-          durationMs: 5000,
-          footer: null,
-          centered: true
+      // 定时使能打开，判断时间
+      if (!isTimeEnableOff) {
+        const doorTimeConfigList = openDoorTimeConfig?.[bin.doorKey]
+        if (!doorTimeConfigList?.length) {
+          message.error('请先配置时间')
+          return
+        }
+        const isTimeOK = doorTimeConfigList.some((item) => {
+          const { startTime, endTime } = item
+          return isTimeInRange(startTime, endTime, dayjs().format('YYYY-MM-DD HH:mm:ss'))
         })
-        speakConfigSet({
-          open: true,
-          texts: ['很抱歉，当前不在投放时段，请按时投放']
-        })
-        return
+        if (!isTimeOK) {
+          showModal({
+            type: 'error',
+            title: '投放时段提示',
+            content: '很抱歉，当前不在投放时段，请按时投放',
+            durationMs: 5000,
+            footer: null,
+            centered: true
+          })
+          speakConfigSet({
+            open: true,
+            texts: ['很抱歉，当前不在投放时段，请按时投放']
+          })
+          return
+        }
       }
       // 开启投递流程
       openPutterDevice(bin.startAddress, bin.doorKey)
@@ -202,7 +217,7 @@ const TrashList = () => {
         texts: ['仓门已打开，请尽快投递']
       })
     },
-    [openDoorTimeConfig, openPutterDevice, opened, showModal]
+    [isTimeEnableOff, openDoorTimeConfig, openPutterDevice, opened, showModal]
   )
 
   const disabled = useMemo(() => {

@@ -2,9 +2,9 @@ import { useState, useRef, useCallback, useMemo } from 'react'
 import micAvif from './mic.avif'
 import micSvg from './mic.svg'
 import './index.css'
-import { useDebounceEffect, useRequest, useUnmount, useWebSocket } from 'ahooks'
+import { useDebounceEffect, useUnmount, useWebSocket } from 'ahooks'
 import { AUDIO_APP_ID } from '@renderer/const'
-import { callApi, generateUUID, identifyAllGarbage } from '@renderer/utils'
+import { generateUUID, identifyAllGarbage } from '@renderer/utils'
 import askAudio from '@renderer/assets/mp3/ask.mp3'
 import { Tooltip } from 'antd'
 import { ReadyState } from 'ahooks/lib/useWebSocket'
@@ -32,7 +32,7 @@ const RealTimeSpeechRecognition = ({ token, onIdentifySuccess }: IProps) => {
   const { sendMessage, disconnect, readyState, connect } = useWebSocket(
     `wss://nls-gateway.cn-shanghai.aliyuncs.com/ws/v1?token=${token}`,
     {
-      reconnectInterval: 30 * 1000,
+      reconnectInterval: 300 * 1000,
       onMessage(event) {
         const message = event?.data ? JSON.parse(event.data) : {}
         if (message.header?.name === 'TranscriptionStarted') {

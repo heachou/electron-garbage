@@ -38,20 +38,12 @@ function App({ children }: { children: React.ReactNode }) {
     }
   )
 
-  const { startPutterDeviceEnable, startPollingPutterState, opened } = usePutterState()
+  const { startPollingPutterState, opened } = usePutterState()
   const {
     startPollingWeightDevice,
     opened: weightDeviceOpened,
     getAllWeightState
   } = useWeightDevice()
-
-  useEffect(() => {
-    if (opened) {
-      setTimeout(() => {
-        startPollingPutterState()
-      }, 1000)
-    }
-  }, [opened, startPollingPutterState])
 
   useEffect(() => {
     if (weightDeviceOpened) {
@@ -75,23 +67,31 @@ function App({ children }: { children: React.ReactNode }) {
     }
   })
   // 定时使能配置同步
-  useTimeEnableConfigSync()
+  useTimeEnableConfigSync({
+    onSuccess: async () => {
+      await startPollingPutterState()
+    }
+  })
 
-  // useEffect(() => {
-  //   if (!config) {
-  //     return
-  //   }
-  //   if (!opened) {
-  //     return
-  //   }
-  //   // 如果可以不登录直接投递
-  //   if (config?.canPutWithoutAuth) {
-  //     startPutterDeviceEnable(true)
-  //   } else {
-  //     // 否则，关闭所有的定时使能选项
-  //     startPutterDeviceEnable(false)
-  //   }
-  // }, [config, config?.canPutWithoutAuth, opened])
+  // 时间同步
+  const { runAsync: syncTime } = useRequest(
+    async () => {
+      return callApi('syncCurrentTime')
+    },
+    {
+      manual: true,
+      pollingInterval: 3 * 60 * 60 * 1000
+    }
+  )
+
+  useEffect(() => {
+    if (opened) {
+      setTimeout(async () => {
+        await startPollingPutterState()
+        await syncTime()
+      }, 1000)
+    }
+  }, [opened, startPollingPutterState, syncTime])
 
   const [messageApi, messgeContext] = message.useMessage()
   useListener('showErrorMessage', (msg) => {

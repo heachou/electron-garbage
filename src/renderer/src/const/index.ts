@@ -2,6 +2,10 @@ import recyclableIcon from '@renderer/assets/icons/recyclable.png'
 import otherWasteIcon from '@renderer/assets/icons/other.png'
 import hazardousWasteIcon from '@renderer/assets/icons/poison.png'
 import foodWasteIcon from '@renderer/assets/icons/kitchen.png'
+import paperIcon from '@renderer/assets/icons/paper.png'
+import plasticIcon from '@renderer/assets/icons/plastic.png'
+import metalIcon from '@renderer/assets/icons/metal.png'
+import fabricIcon from '@renderer/assets/icons/fabric.png'
 
 console.log('🚀 ~ foodWasteIcon:', foodWasteIcon)
 
@@ -45,5 +49,29 @@ export const garbageTypeConfig = {
     enName: 'Recyclable',
     color: '#004B81',
     icon: recyclableIcon
+  },
+  纸类: {
+    name: '纸类',
+    enName: 'Paper',
+    color: '#8D7357',
+    icon: paperIcon
+  },
+  塑料: {
+    name: '塑料',
+    enName: 'Plastic',
+    color: '#0099DD',
+    icon: plasticIcon
+  },
+  金属: {
+    name: '金属',
+    enName: 'Metal',
+    color: '#F4DC39',
+    icon: metalIcon
+  },
+  织物: {
+    name: '织物',
+    enName: 'Fabric',
+    color: '#EA919F',
+    icon: fabricIcon
   }
 }

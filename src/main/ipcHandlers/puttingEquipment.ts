@@ -1,6 +1,7 @@
 import { registerConfigs } from '../data'
 import Service from '../services/service'
 import { parseResponseWithContext } from '../utils/modbusUtils'
+import dayjs from 'dayjs'
 
 const getPutterDevicePort = () => {
   return Service.getInstance().store.get('putterDevicePort') as string
@@ -84,6 +85,21 @@ export const puttingEquipmentHandlers = () => {
       const result = await client.writeSingleRegisters({
         deviceAddress: 0x01,
         ...params,
+        port
+      })
+      return result
+    },
+    syncCurrentTime: async () => {
+      const port = getPutterDevicePort()
+      const client = Service.getInstance().modbusClient
+      const hour = dayjs().hour()
+      const minute = dayjs().minute()
+      const second = dayjs().second()
+      // 24,25,26 时分秒
+      const result = await client.writeMultipleRegisters({
+        deviceAddress: 0x01,
+        startAddress: 24,
+        values: [hour, minute, second],
         port
       })
       return result

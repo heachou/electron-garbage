@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Card, Tag, Space, Button, message } from 'antd'
+import { Tag, Button, message } from 'antd'
 import useUserStore from '@renderer/store/userStore'
 import {
   callApi,
@@ -205,17 +205,12 @@ const TrashList = () => {
     [openDoorTimeConfig, openPutterDevice, opened, showModal]
   )
 
-  const config = useLocalConfigStore((state) => state.config)
-
   const disabled = useMemo(() => {
     if (!opened) {
       return true
     }
-    if (config?.canPutWithoutAuth) {
-      return false
-    }
     return !loginUser
-  }, [config?.canPutWithoutAuth, loginUser, opened])
+  }, [loginUser, opened])
 
   const handleIdentifySuccess = useCallback(
     async (result: GarbageInfo[]) => {
@@ -248,7 +243,7 @@ const TrashList = () => {
           {trashBins.map((bin) => {
             const config = garbageTypeConfig[bin.name as keyof typeof garbageTypeConfig]
             return (
-              <div key={bin.doorKey} className="bg-white rounded-lg p-2">
+              <div key={bin.doorKey} className="bg-white rounded-lg p-2 relative">
                 <div
                   className="flex items-center justify-center flex-col py-2 rounded-t-md"
                   style={{
@@ -273,6 +268,16 @@ const TrashList = () => {
                 >
                   {!opened ? '仓门设备未连接' : !disabled ? '点击开门' : '登录后点击开门'}
                 </Button>
+                {bin.status === 'fault' && (
+                  <span className="absolute left-0 top-0 mx-0 bg-red-500 text-white px-4 text-sm py-0 rounded shadow-2xl">
+                    满仓
+                  </span>
+                )}
+                {bin.status === 'normal' && (
+                  <span className="absolute left-0 top-0 mx-0 bg-primary text-white px-4 py-0 text-sm rounded shadow-2xl">
+                    正常
+                  </span>
+                )}
               </div>
             )
           })}

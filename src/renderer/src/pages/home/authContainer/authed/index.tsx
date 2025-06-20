@@ -1,12 +1,13 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Avatar, Button, Typography, Statistic, Alert, Space, Divider } from 'antd' // 引入 Ant Design 组件
 import { LogoutOutlined, RiseOutlined } from '@ant-design/icons' // 引入图标
 import PutInStatModal from './putInStatModal'
 import FaceBindModal from './faceBindModal'
 import CardBindModal from './cardBindModal'
 import useUserStore from '@renderer/store/userStore'
-import { LOGOUT_DELAY_SECONDS, mediaDomain, defaultAvatarUrl } from '@renderer/const'
+import { mediaDomain, defaultAvatarUrl } from '@renderer/const'
 import useLocalConfigStore from '@renderer/store/localStore'
+import { useCountDown } from 'ahooks'
 
 const { Title, Text } = Typography
 
@@ -17,30 +18,16 @@ const Authed = () => {
   const config = useLocalConfigStore((state) => state.config)
 
   const logout = useUserStore((state) => state.logout)
-  // 注意：这里的倒计时仅用于 UI 显示，实际的登出逻辑由 userStore 控制
-  const [countdown, setCountdown] = useState(config?.maxOnlineTime || 180)
 
-  useEffect(() => {
-    // 当用户信息存在时，启动 UI 倒计时
-    if (userInfo) {
-      setCountdown(config?.maxOnlineTime || 180) // 重置倒计时
-      const intervalId = setInterval(() => {
-        setCountdown((prevCount) => {
-          if (prevCount <= 1) {
-            clearInterval(intervalId)
-            return 0
-          }
-          return prevCount - 1
-        })
-      }, 1000)
-
-      return () => clearInterval(intervalId)
-    } else {
-      setCountdown(LOGOUT_DELAY_SECONDS)
+  const [leftTime] = useCountDown({
+    leftTime: (config?.maxOnlineTime || 180) * 1000,
+    onEnd: () => {
+      logout()
     }
-  }, [userInfo])
+  })
+  console.log('🚀 ~ Authed ~ leftTime:', leftTime)
 
-  const avatarUrl = userInfo?.avatar ? `${mediaDomain}${userInfo.avatar}` : defaultAvatarUrl // 假设 userInfo.faces 是一个数组，我们取第一个作为 avat
+  const avatarUrl = userInfo?.avatar ? `${mediaDomain}${userInfo.avatar}` : defaultAvatarUrl
 
   const addressText = useMemo(() => {
     const { residentialCommunity, building, cell } = userInfo || {}
@@ -121,7 +108,7 @@ const Authed = () => {
           </div>
           <Alert
             className="py-3 text-base w-full"
-            description={`请在规定的时间内完成投递，否则需要再次扫码/刷卡开门。系统将于 ${countdown} 秒后自动注销`}
+            description={`请在规定的时间内完成投递，否则需要再次扫码/刷卡开门。系统将于 ${Math.round(leftTime / 1000)} 秒后自动注销`}
             type="warning"
           />
           <Button

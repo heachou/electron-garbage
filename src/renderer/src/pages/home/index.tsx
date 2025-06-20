@@ -37,7 +37,7 @@ const Home = () => {
       </div>
       <span
         {...longPressEvents}
-        className="absolute cursor-pointer select-none px-4 py-1 rounded left-1/2 -translate-x-1/2 w-40 text-center bg-primary text-white top-0"
+        className="absolute cursor-pointer select-none py-4 rounded left-0 top-1/2 -translate-y-1/2 h-40 w-6 text-center bg-primary text-white"
       >
         城洁云分类
       </span>

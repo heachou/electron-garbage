@@ -1,6 +1,6 @@
 {
   "name": "garbage-classification",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "智能垃圾分类投递感知系统",
   "main": "./out/main/index.js",
   "author": "heachou",

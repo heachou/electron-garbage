@@ -6,7 +6,6 @@ import Service from './services/service'
 import { encodeError } from './utils'
 import { is } from '@electron-toolkit/utils'
 import { addSmallestUpdaterListeners, addUpdaterListener, checkSmallUpdate } from './module/updater'
-import { getGarbageKindList } from './services/media'
 
 let mainWindow: BrowserWindow | null = null
 

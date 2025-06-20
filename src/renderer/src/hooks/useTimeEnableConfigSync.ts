@@ -5,7 +5,7 @@ import usePuttingEquipmentStore from '@renderer/store/puttingEquipmentStore'
 import { useRequest } from 'ahooks'
 import { timeConfigAddressConfig } from '@/main/const/config'
 import dayjs from 'dayjs'
-import { callApi, sleep } from '@renderer/utils'
+import { callApi } from '@renderer/utils'
 
 const useTimeEnableConfigSync = () => {
   const config = useLocalConfigStore((state) => state.config)
@@ -98,6 +98,16 @@ const useTimeEnableConfigSync = () => {
       refreshDeps: [finalConfig]
     }
   )
+
+  // 时间同步
+  // useRequest(
+  //   async () => {
+  //     return callApi(')
+  //   },
+  //   {
+  //     ready: putterDeviceOpended
+  //   }
+  // )
 }
 
 export default useTimeEnableConfigSync

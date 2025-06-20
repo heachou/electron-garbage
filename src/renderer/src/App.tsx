@@ -14,7 +14,6 @@ import useTimeEnableConfigSync from './hooks/useTimeEnableConfigSync'
 
 function App({ children }: { children: React.ReactNode }) {
   const getConfig = useLocalConfigStore((state) => state.getConfig)
-  const config = useLocalConfigStore((state) => state.config)
 
   useMount(() => {
     getConfig()
@@ -39,12 +38,7 @@ function App({ children }: { children: React.ReactNode }) {
     }
   )
 
-  const {
-    startPutterDeviceEnable,
-    startPollingPutterState,
-    opened,
-    connect: connectPutterDevice
-  } = usePutterState()
+  const { startPutterDeviceEnable, startPollingPutterState, opened } = usePutterState()
   const {
     startPollingWeightDevice,
     opened: weightDeviceOpened,
@@ -57,7 +51,7 @@ function App({ children }: { children: React.ReactNode }) {
         startPollingPutterState()
       }, 1000)
     }
-  }, [connectPutterDevice, opened, startPollingPutterState])
+  }, [opened, startPollingPutterState])
 
   useEffect(() => {
     if (weightDeviceOpened) {
@@ -68,10 +62,6 @@ function App({ children }: { children: React.ReactNode }) {
   }, [getAllWeightState, startPollingWeightDevice, weightDeviceOpened])
 
   useListener('userLoginSuccess', () => {
-    if (opened) {
-      // 用户登录成功，开启所有的定时使能选项
-      startPutterDeviceEnable(true)
-    }
     // 获取一次重量
     if (weightDeviceOpened) {
       startPollingWeightDevice()
@@ -84,7 +74,7 @@ function App({ children }: { children: React.ReactNode }) {
       startPollingWeightDevice()
     }
   })
-
+  // 定时使能配置同步
   useTimeEnableConfigSync()
 
   // useEffect(() => {

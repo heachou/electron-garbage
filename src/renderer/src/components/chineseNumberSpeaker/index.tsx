@@ -1,3 +1,4 @@
+import { getPublicPath } from '@renderer/utils'
 import React, { useEffect, useCallback } from 'react'
 
 interface ChineseNumberSpeakerProps {
@@ -12,7 +13,7 @@ const ChineseNumberSpeaker: React.FC<ChineseNumberSpeakerProps> = ({ texts, onPl
     (index: number) => {
       if (index < texts.length) {
         const char = texts[index]
-        const audioSrc = `/assets/mp3/${char}.mp3`
+        const audioSrc = getPublicPath(`/assets/mp3/${char}.mp3`)
 
         if (!audioRef.current) {
           audioRef.current = new Audio()

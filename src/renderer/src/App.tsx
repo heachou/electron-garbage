@@ -12,6 +12,8 @@ import useWeightDeviceStore from './store/weightDeviceStore'
 import useGarbageKindStore from './store/garbageStore'
 import useTimeEnableConfigSync from './hooks/useTimeEnableConfigSync'
 
+console.log('环境变量1', import.meta.env.BASE_URL)
+
 function App({ children }: { children: React.ReactNode }) {
   const getConfig = useLocalConfigStore((state) => state.getConfig)
 

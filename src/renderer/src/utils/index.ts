@@ -199,3 +199,8 @@ export function identifyAllGarbage(
 
   return foundItems
 }
+
+// 创建路径处理钩子
+export function getPublicPath(path: string) {
+  return import.meta.env.DEV ? path : `.${path}`
+}

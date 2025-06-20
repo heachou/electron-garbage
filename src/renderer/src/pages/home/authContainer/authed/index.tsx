@@ -25,7 +25,6 @@ const Authed = () => {
       logout()
     }
   })
-  console.log('🚀 ~ Authed ~ leftTime:', leftTime)
 
   const avatarUrl = userInfo?.avatar ? `${mediaDomain}${userInfo.avatar}` : defaultAvatarUrl
 
